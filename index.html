@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>店舗利用に関する誓約書</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,'Hiragino Sans',sans-serif;background:#f5f5f0;color:#222;-webkit-text-size-adjust:100%;}
+  .container{max-width:700px;margin:0 auto;padding:16px;}
+  .header{text-align:center;padding:20px 0 12px;border-bottom:1px solid #ddd;margin-bottom:16px;}
+  .header h1{font-size:18px;font-weight:700;}
+  .header p{font-size:12px;color:#555;margin-top:6px;line-height:1.6;}
+  .shop-label{display:inline-block;margin-top:8px;background:#222;color:#fff;font-size:12px;font-weight:600;padding:4px 14px;border-radius:20px;}
+  .section{background:#fff;border-radius:12px;border:0.5px solid #ddd;padding:16px;margin-bottom:12px;}
+  .section h2{font-size:13px;font-weight:600;color:#555;margin-bottom:10px;}
+  .article{margin-bottom:12px;}
+  .article-title{font-size:13px;font-weight:700;margin-bottom:3px;text-decoration:underline;}
+  .article-body{font-size:12px;line-height:1.85;color:#333;}
+  .field{margin-bottom:10px;}
+  .field label{font-size:12px;color:#666;display:block;margin-bottom:4px;}
+  .field input{width:100%;padding:10px 12px;border:0.5px solid #ccc;border-radius:8px;font-size:16px;outline:none;font-family:inherit;-webkit-appearance:none;}
+  .field input:focus{border-color:#888;}
+  .field-row{display:flex;gap:10px;}
+  .field-row .field{flex:1;}
+  .canvas-wrap{position:relative;border:0.5px solid #ccc;border-radius:8px;background:#fafaf8;overflow:hidden;}
+  #signatureCanvas{display:block;touch-action:none;width:100%;height:160px;}
+  .canvas-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13px;color:#bbb;pointer-events:none;white-space:nowrap;}
+  .canvas-actions{display:flex;justify-content:flex-end;margin-top:6px;}
+  .btn-sm{font-size:12px;color:#888;background:none;border:0.5px solid #ccc;border-radius:6px;padding:5px 12px;cursor:pointer;font-family:inherit;}
+  .actions{display:flex;gap:10px;margin-top:8px;}
+  .btn-primary{flex:1;background:#222;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;}
+  .btn-secondary{flex:1;background:#fff;color:#222;border:1px solid #999;border-radius:10px;padding:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;}
+  .agree-check{display:flex;align-items:flex-start;gap:10px;margin-top:10px;padding:12px;background:#f9f9f7;border-radius:8px;border:0.5px solid #ddd;}
+  .agree-check input[type=checkbox]{width:20px;height:20px;margin-top:1px;flex-shrink:0;cursor:pointer;}
+  .agree-check label{font-size:13px;line-height:1.6;color:#333;cursor:pointer;}
+  .tab-row{display:flex;margin-bottom:16px;border:0.5px solid #ccc;border-radius:10px;overflow:hidden;background:#f5f5f0;}
+  .tab{flex:1;padding:10px;font-size:12px;text-align:center;cursor:pointer;background:transparent;border:none;font-family:inherit;color:#666;}
+  .tab.active{background:#222;color:#fff;font-weight:500;}
+  .view{display:none;}
+  .view.active{display:block;}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:100;white-space:nowrap;}
+  .toast.show{opacity:1;}
+  .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f5f0;padding:20px;}
+  .login-card{background:#fff;border-radius:16px;border:0.5px solid #ddd;padding:32px 24px;width:100%;max-width:360px;text-align:center;}
+  .login-card h1{font-size:18px;font-weight:700;margin-bottom:6px;}
+  .login-card p{font-size:12px;color:#888;margin-bottom:24px;line-height:1.6;}
+  .login-card input{width:100%;padding:12px 14px;border:0.5px solid #ccc;border-radius:10px;font-size:18px;outline:none;font-family:inherit;text-align:center;letter-spacing:4px;margin-bottom:14px;-webkit-appearance:none;}
+  .login-err{font-size:12px;color:#c00;margin-bottom:10px;min-height:16px;}
+  .record-item{padding:12px 0;border-bottom:0.5px solid #eee;}
+  .record-item:last-child{border-bottom:none;}
+  .record-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;}
+  .record-name{font-weight:600;font-size:14px;}
+  .record-name-orig{font-size:11px;color:#aaa;margin-top:1px;}
+  .record-meta{color:#888;font-size:11px;margin-top:2px;}
+  .record-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;}
+  .tag-table{background:#e8f4ff;color:#0066aa;}
+  .tag-staff{background:#f0f0e8;color:#666;}
+  .tag-empty{background:#f5f5f0;color:#aaa;border:0.5px dashed #ccc;}
+  .record-btns{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
+  .record-btn{font-size:11px;color:#555;background:none;border:0.5px solid #ccc;border-radius:6px;padding:4px 8px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .record-btn.edit{color:#059;border-color:#adf;background:#f0f8ff;}
+  .no-records{color:#bbb;font-size:13px;text-align:center;padding:20px 0;}
+  .search-bar{width:100%;padding:10px 12px;border:0.5px solid #ccc;border-radius:8px;font-size:16px;outline:none;font-family:inherit;margin-bottom:8px;-webkit-appearance:none;}
+  .count-badge{display:inline-block;background:#e8e8e5;color:#555;font-size:11px;border-radius:10px;padding:1px 8px;margin-left:6px;}
+  .sync-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .sync-status{font-size:11px;color:#888;}
+  .sync-status.ok{color:#090;}
+  .sync-status.err{color:#c00;}
+  .btn-sync{font-size:12px;color:#555;background:none;border:0.5px solid #ccc;border-radius:6px;padding:5px 12px;cursor:pointer;font-family:inherit;}
+  .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:14px;padding:22px;width:88%;max-width:420px;max-height:90vh;overflow-y:auto;}
+  .modal h3{font-size:16px;font-weight:600;margin-bottom:4px;}
+  .modal-sub{font-size:12px;color:#888;margin-bottom:14px;line-height:1.6;}
+  .modal-field{margin-bottom:12px;}
+  .modal-field label{font-size:12px;color:#666;display:block;margin-bottom:4px;}
+  .modal-field input{width:100%;padding:10px 12px;border:0.5px solid #ccc;border-radius:8px;font-size:16px;outline:none;font-family:inherit;-webkit-appearance:none;}
+  .field-note{font-size:11px;color:#aaa;margin-top:4px;}
+  .orig-val{font-size:12px;color:#888;padding:8px 12px;background:#f5f5f0;border-radius:6px;}
+  .modal-btns{display:flex;gap:10px;margin-top:16px;}
+  .modal-btns button{flex:1;padding:11px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
+  .modal-cancel{background:#fff;color:#666;border:0.5px solid #ccc;}
+  .modal-ok{background:#222;color:#fff;border:none;}
+  .export-btn{width:100%;padding:11px;margin-top:6px;font-size:13px;color:#555;background:#fff;border:0.5px solid #ccc;border-radius:8px;cursor:pointer;font-family:inherit;}
+  .date-group{margin-bottom:16px;}
+  .date-group-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f5f5f0;border-radius:8px;margin-bottom:6px;}
+  .date-group-title{font-size:13px;font-weight:600;color:#444;}
+  .btn-pdf-date{font-size:11px;color:#fff;background:#555;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit;}
+  .bulk-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .bulk-btn{flex:1;min-width:140px;padding:10px;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;font-family:inherit;}
+  .bulk-btn-primary{background:#222;color:#fff;border:none;}
+  .bulk-btn-secondary{background:#fff;color:#444;border:0.5px solid #ccc;}
+  .filter-status{font-size:12px;color:#888;margin-bottom:10px;}
+  .filter-status.active{color:#059;}
+  .qr-wrap{text-align:center;padding:16px 0;}
+  .qr-label{font-size:12px;color:#888;margin-top:8px;}
+  .qr-url{font-size:11px;color:#aaa;margin-top:4px;word-break:break-all;}
+  .btn-print{width:100%;padding:11px;margin-top:10px;font-size:13px;font-weight:500;color:#fff;background:#222;border:none;border-radius:8px;cursor:pointer;font-family:inherit;}
+  .success-screen{text-align:center;padding:40px 20px;}
+  .success-screen .icon{font-size:60px;margin-bottom:16px;}
+  .success-screen h2{font-size:20px;font-weight:700;margin-bottom:8px;}
+  .success-screen p{font-size:14px;color:#555;line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <h1>店舗利用に関する誓約書</h1>
+    <p>店舗パスワードを入力してください</p>
+    <input type="password" id="loginPwInput" placeholder="••••" maxlength="20" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-err" id="loginErr"></div>
+    <button class="btn-primary" style="width:100%;" onclick="doLogin()">ログイン</button>
+  </div>
+</div>
+
+<div id="mainScreen" style="display:none;">
+<div class="container">
+  <div class="header">
+    <h1>店舗利用に関する誓約書</h1>
+    <p>当店を安心してご利用いただくために、<br>以下の確認事項にご同意をお願いしております。</p>
+    <span class="shop-label" id="headerShopName"></span>
+  </div>
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab('form',this)">署名フォーム</button>
+    <button class="tab" id="tabRecords" onclick="switchTab('records',this)">保存記録</button>
+    <button class="tab" id="tabQr" onclick="switchTab('qr',this)">QRコード</button>
+    <button class="tab" id="tabSettings" onclick="switchTab('settings',this)">設定</button>
+  </div>
+
+  <div id="view-form" class="view active">
+    <div id="formArea">
+      <div class="section">
+        <h2>誓約内容</h2>
+        <div id="articleContainer"></div>
+        <div class="agree-check">
+          <input type="checkbox" id="agreeCheck">
+          <label for="agreeCheck">上記すべての内容を読み、理解した上で同意します。</label>
+        </div>
+      </div>
+      <div class="section">
+        <h2>お客様情報</h2>
+        <div class="field">
+          <label>◆ 氏名（必須）</label>
+          <input type="text" id="name" placeholder="山田 太郎" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>◆ 生年月日</label>
+          <input type="date" id="birthdate">
+        </div>
+        <div class="field">
+          <label>来店日時</label>
+          <input type="text" id="visitDate" readonly>
+        </div>
+      </div>
+      <div class="section">
+        <h2>署名（指でサインしてください）</h2>
+        <div class="canvas-wrap">
+          <canvas id="signatureCanvas"></canvas>
+          <span class="canvas-hint" id="canvasHint">ここにサインしてください</span>
+        </div>
+        <div class="canvas-actions">
+          <button class="btn-sm" onclick="clearSignature()">クリア</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn-primary" id="submitBtn" onclick="saveRecord()">同意して送信</button>
+        <button class="btn-secondary" onclick="downloadPDF()">PDF出力</button>
+      </div>
+    </div>
+    <div id="successArea" style="display:none;">
+      <div class="section">
+        <div class="success-screen">
+          <div class="icon">✅</div>
+          <h2>送信完了しました</h2>
+          <p>ご協力ありがとうございました。<br>スタッフにお声がけください。</p>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="resetToForm()" style="width:100%;">次の方へ（フォームに戻る）</button>
+    </div>
+  </div>
+
+  <div id="view-records" class="view">
+    <div class="section">
+      <h2>保存された記録 <span class="count-badge" id="countBadge">0件</span></h2>
+      <div class="sync-bar">
+        <span class="sync-status" id="syncStatus">---</span>
+        <button class="btn-sync" onclick="loadRecords()">🔄 最新を取得</button>
+      </div>
+      <input class="search-bar" id="searchBar" type="text" placeholder="氏名・卓番・担当者で検索..." oninput="renderRecordsList()">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+        <div style="flex:1;min-width:130px;">
+          <label style="font-size:11px;color:#888;display:block;margin-bottom:3px;">月で絞り込み</label>
+          <input type="month" id="filterMonth" onchange="renderRecordsList()" style="width:100%;padding:8px 10px;border:0.5px solid #ccc;border-radius:8px;font-size:14px;outline:none;font-family:inherit;-webkit-appearance:none;background:#fff;">
+        </div>
+        <div style="flex:1;min-width:130px;">
+          <label style="font-size:11px;color:#888;display:block;margin-bottom:3px;">日付で絞り込み</label>
+          <input type="date" id="filterDate" onchange="renderRecordsList()" style="width:100%;padding:8px 10px;border:0.5px solid #ccc;border-radius:8px;font-size:14px;outline:none;font-family:inherit;-webkit-appearance:none;background:#fff;">
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+        <button onclick="clearFilters()" style="font-size:12px;color:#888;background:none;border:0.5px solid #ccc;border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;">リセット</button>
+      </div>
+      <div class="filter-status" id="filterStatus"></div>
+      <div class="bulk-bar">
+        <button class="bulk-btn bulk-btn-primary" onclick="bulkPDFToday()">📄 今日の記録を一括PDF</button>
+        <button class="bulk-btn bulk-btn-secondary" onclick="showDatePickerModal()">📅 日付を選んでPDF</button>
+      </div>
+      <div id="recordList"><div class="no-records">「最新を取得」を押してください</div></div>
+    </div>
+    <button class="export-btn" onclick="exportCSV()">CSVで一括エクスポート</button>
+    <button class="export-btn" style="color:#c00;border-color:#fcc;margin-top:6px;" onclick="logout()">🔒 ログアウト</button>
+  </div>
+
+  <div id="view-qr" class="view">
+    <div class="section">
+      <h2>お客様用QRコード</h2>
+      <p style="font-size:12px;color:#666;margin-bottom:12px;line-height:1.7;">このQRコードを印刷して受付に設置してください。</p>
+      <div class="qr-wrap">
+        <div id="qrCanvas"></div>
+        <div class="qr-label">📱 スマホで読み取ってください</div>
+        <div class="qr-url" id="qrUrlText"></div>
+      </div>
+      <button class="btn-print" onclick="printQR()">🖨️ QRコードを印刷する</button>
+    </div>
+  </div>
+
+  <div id="view-settings" class="view">
+    <div class="section">
+      <h2>現在の店舗</h2>
+      <p style="font-size:14px;font-weight:600;" id="currentShopDisp"></p>
+    </div>
+    <button class="export-btn" style="color:#c00;border-color:#fcc;" onclick="logout()">🔒 ログアウト</button>
+  </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="editModalOverlay">
+  <div class="modal">
+    <h3>記録を編集</h3>
+    <p class="modal-sub">元の氏名は保持されます。表示名・卓番・担当者を編集できます。</p>
+    <div class="modal-field">
+      <label>◆ 元の氏名（変更不可）</label>
+      <div class="orig-val" id="editOrigName"></div>
+    </div>
+    <div class="modal-field">
+      <label>表示名（別名・ニックネームなど）</label>
+      <input type="text" id="editDisplayName" placeholder="空欄の場合は元の氏名を表示">
+      <div class="field-note">空欄の場合は元の氏名をそのまま表示します</div>
+    </div>
+    <div class="modal-field">
+      <label>卓番</label>
+      <input type="text" id="editTableNo" placeholder="例：A1、B3">
+    </div>
+    <div class="modal-field">
+      <label>担当者名</label>
+      <input type="text" id="editStaff" placeholder="担当者名を入力">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeEditModal()">キャンセル</button>
+      <button class="modal-ok" onclick="saveEdit()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="dateModalOverlay">
+  <div class="modal">
+    <h3>日付を選択してPDF出力</h3>
+    <div class="modal-field">
+      <input type="date" id="datePickerInput">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeDateModal()">キャンセル</button>
+      <button class="modal-ok" onclick="bulkPDFByDate()">PDF出力</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const SHOPS=[
+  {name:'本部',pw:'0430',gasUrl:'https://script.google.com/macros/s/AKfycby6kEuDmlV8prBTIAVOveyn5KpZ1mWsRfTdPnOSVwc6z52YSwJUNcIvwE0InXZqQipJzg/exec',isHonbu:true},
+  {name:'Regulus',pw:'regulus',gasUrl:'https://script.google.com/macros/s/AKfycbwHOFT3NXHddlUU_uRPZoU2hF1LshUTHzTZWiMrC9j0dN_R2wj_hxqYucYK_YU3qXoV7g/exec',isHonbu:false},
+  {name:'G.O.A.T.',pw:'goat',gasUrl:'https://script.google.com/macros/s/AKfycbxMV5Q-HPkGlrRsfpImn1n7yIrfy5U4erZtj94QpChc8wdXqatBK3e9PPQ0Xvq1rb9Q1A/exec',isHonbu:false}
+];
+const HONBU_URL=SHOPS.find(s=>s.isHonbu).gasUrl;
+
+const ARTICLES=[
+  {title:'第１条',body:'身分証明書の提示の上、18歳以上であることを誓約します。私が提示した身分証は、偽造・窃盗・その他の不正な手段で入手したものではなく、正当な権限を有する機関で発行された私本人のもので間違いありません。別途、店舗より身分証明書のコピーを求められた場合に応じない場合、それ以降、店舗利用が出来ない事を同意します。'},
+  {title:'第２条',body:'暴力団関係者等の反社会勢力ではなく、それらに準ずる者や構成員でない事を誓います。'},
+  {title:'第３条',body:'店舗会計時に使用する金銭は組織的な犯罪の処罰及び犯罪収益の規制等に関する法律に規定されている犯罪（例えば、窃盗、詐欺、横領罪等）により取得したものではなく正当な手段によって取得された金銭であることを誓います。'},
+  {title:'第４条',body:'店内において、スタッフおよび他のお客様に対して、暴言・暴力・迷惑行為等のハラスメント行為は一切行いません。キャストへのストーカー行為、プライベートへの介入を致しません。'},
+  {title:'第５条',body:'誓約書のサイン前に料金説明を受け、料金体系を理解致しました。支払金額、支払内容ともに同意をした上で、代金をお支払い致します。お支払いした商品や役務の対価につきましては、返金には応じられない事を了承します。'},
+  {title:'第６条',body:'店内での撮影・録音は、事前に許可を得た場合のみ行います。'},
+  {title:'第７条',body:'キャストから発せられる「褒め言葉」「好意的な表現」「親しみを感じさせる発言」等は、社交辞令または会話を円滑に進めるための接客上の演出であり、実際の恋愛感情や個人的関係を前提としたものではないことを理解し、それらに過度な期待や誤解を抱かないことに同意します。'},
+  {title:'第８条',body:'キープボトルの破損について、天災・人災による場合、当店は損害賠償責任を負いません。また、最終来店から３ヶ月を経過したボトルについては、予告なく廃棄する場合があることに同意します。'},
+  {title:'第９条',body:'万が一、上記の事項に違反した場合、店舗の判断により、入店をお断りする事、すでに入店済みでも退店をお願いする事に同意します。'},
+];
+
+let currentShop=null, records=[], localEdits={}, editingId=null, qrGenerated=false;
+let cvs=null, ctx=null, drawing=false, hasSignature=false;
+
+const urlParams=new URLSearchParams(location.search);
+const isStaff=urlParams.has('staff');
+const shopParam=urlParams.get('shop')||'';
+
+// 起動
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=sessionStorage.getItem('shopPw');
+  if(saved){
+    const f=SHOPS.find(s=>s.pw===saved);
+    if(f){currentShop=f;startApp();return;}
+  }
+  if(!isStaff&&shopParam){
+    const f=SHOPS.find(s=>s.pw===shopParam);
+    if(f){currentShop=f;startCustomer();return;}
+  }
+  if(!isStaff&&!shopParam){
+    const f=SHOPS.find(s=>!s.isHonbu);
+    if(f){currentShop=f;startCustomer();return;}
+  }
+  document.getElementById('loginScreen').style.display='flex';
+});
+
+function startCustomer(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainScreen').style.display='block';
+  document.getElementById('headerShopName').style.display='none';
+  ['tabRecords','tabQr','tabSettings'].forEach(id=>document.getElementById(id).style.display='none');
+  init();
+}
+function startApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainScreen').style.display='block';
+  document.getElementById('headerShopName').textContent=currentShop.name+(currentShop.isHonbu?' 【本部】':'');
+  document.getElementById('currentShopDisp').textContent=currentShop.name;
+  localEdits=JSON.parse(localStorage.getItem('edits_'+currentShop.pw)||'{}');
+  init();
+}
+function init(){
+  renderArticles();
+  setDateTime();
+  // canvas初期化はDOMが表示された後に実行
+  setTimeout(()=>setupCanvas(),100);
+}
+function doLogin(){
+  const pw=document.getElementById('loginPwInput').value.trim();
+  const f=SHOPS.find(s=>s.pw===pw);
+  if(!f){document.getElementById('loginErr').textContent='パスワードが違います';return;}
+  currentShop=f;
+  sessionStorage.setItem('shopPw',pw);
+  document.getElementById('loginErr').textContent='';
+  startApp();
+}
+function logout(){
+  sessionStorage.removeItem('shopPw');
+  currentShop=null;records=[];qrGenerated=false;cvs=null;ctx=null;
+  document.getElementById('qrCanvas').innerHTML='';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('mainScreen').style.display='none';
+  document.getElementById('loginPwInput').value='';
+}
+
+// canvas
+function setupCanvas(){
+  cvs=document.getElementById('signatureCanvas');
+  if(!cvs)return;
+  ctx=cvs.getContext('2d');
+  resizeCanvas();
+  cvs.addEventListener('mousedown',e=>{drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);});
+  cvs.addEventListener('mousemove',e=>{if(!drawing)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();signed();});
+  cvs.addEventListener('mouseup',()=>drawing=false);
+  cvs.addEventListener('mouseleave',()=>drawing=false);
+  cvs.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);},{passive:false});
+  cvs.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();signed();},{passive:false});
+  cvs.addEventListener('touchend',()=>drawing=false);
+}
+function resizeCanvas(){
+  if(!cvs)return;
+  const r=cvs.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+  cvs.width=r.width*dpr;cvs.height=r.height*dpr;
+  ctx.scale(dpr,dpr);
+  ctx.strokeStyle='#111';ctx.lineWidth=2.2;ctx.lineCap='round';ctx.lineJoin='round';
+}
+function pos(e){
+  const r=cvs.getBoundingClientRect(),s=e.touches?e.touches[0]:e;
+  return{x:s.clientX-r.left,y:s.clientY-r.top};
+}
+function signed(){hasSignature=true;document.getElementById('canvasHint').style.display='none';}
+function clearSignature(){
+  if(!cvs)return;
+  const r=cvs.getBoundingClientRect();
+  ctx.clearRect(0,0,r.width,r.height);
+  hasSignature=false;document.getElementById('canvasHint').style.display='block';
+}
+window.addEventListener('resize',()=>{if(cvs){resizeCanvas();clearSignature();}});
+
+function setDateTime(){
+  const n=new Date();
+  const el=document.getElementById('visitDate');
+  if(el) el.value=`${n.getFullYear()}/${String(n.getMonth()+1).padStart(2,'0')}/${String(n.getDate()).padStart(2,'0')} ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function renderArticles(){
+  const el=document.getElementById('articleContainer');
+  if(el) el.innerHTML=ARTICLES.map(a=>`<div class="article"><div class="article-title">${a.title}</div><div class="article-body">${a.body}</div></div>`).join('');
+}
+
+async function sendGAS(url,data){
+  try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});return true;}
+  catch(e){return false;}
+}
+async function saveRecord(){
+  const name=document.getElementById('name').value.trim();
+  if(!name){showToast('氏名を入力してください');return;}
+  if(!document.getElementById('agreeCheck').checked){showToast('誓約内容への同意チェックが必要です');return;}
+  if(!hasSignature){showToast('署名をしてください');return;}
+  const btn=document.getElementById('submitBtn');
+  btn.textContent='送信中...';btn.disabled=true;
+  const rec=buildRecord();
+  const ok=await sendGAS(currentShop.gasUrl,{...rec,shopName:currentShop.name});
+  if(!currentShop.isHonbu) await sendGAS(HONBU_URL,{...rec,shopName:currentShop.name});
+  btn.textContent='同意して送信';btn.disabled=false;
+  if(ok){
+    document.getElementById('formArea').style.display='none';
+    document.getElementById('successArea').style.display='block';
+  }else{
+    showToast('送信に失敗しました。もう一度お試しください');
+  }
+}
+function buildRecord(){
+  return{
+    id:Date.now(),
+    name:document.getElementById('name').value.trim(),
+    birthdate:document.getElementById('birthdate').value,
+    date:document.getElementById('visitDate').value,
+    signature:cvs?cvs.toDataURL('image/png'):''
+  };
+}
+function resetToForm(){
+  document.getElementById('formArea').style.display='block';
+  document.getElementById('successArea').style.display='none';
+  ['name','birthdate'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('agreeCheck').checked=false;
+  setDateTime();clearSignature();
+}
+
+async function loadRecords(){
+  const st=document.getElementById('syncStatus');
+  st.textContent='取得中...';st.className='sync-status';
+  try{
+    const res=await fetch(currentShop.gasUrl+'?t='+Date.now());
+    const data=await res.json();
+    records=data.records||[];
+    st.textContent='✅ '+new Date().toLocaleTimeString('ja-JP')+' 更新';
+    st.className='sync-status ok';
+    renderRecordsList();
+  }catch(e){
+    st.textContent='❌ 取得失敗';st.className='sync-status err';
+  }
+}
+function me(r){const e=localEdits[r.id];return e?Object.assign({},r,e):r;}
+function dn(r){return r.displayName||r.name;}
+function dk(d){
+  if(!d) return '不明';
+  const s = String(d);
+  // ISO形式 2026-03-25T10:31:00.000Z の場合
+  if(s.includes('T')){
+    const dt = new Date(s);
+    return `${dt.getFullYear()}/${String(dt.getMonth()+1).padStart(2,'0')}/${String(dt.getDate()).padStart(2,'0')}`;
+  }
+  // 通常形式 2026/03/25 10:31 の場合
+  return s.split(' ')[0];
+}
+function clearFilters(){
+  document.getElementById('searchBar').value='';
+  document.getElementById('filterMonth').value='';
+  document.getElementById('filterDate').value='';
+  renderRecordsList();
+}
+function renderRecordsList(){
+  const list=document.getElementById('recordList');
+  const q=(document.getElementById('searchBar').value||'').trim().toLowerCase();
+  const fm=(document.getElementById('filterMonth').value||'').trim();
+  const fd=(document.getElementById('filterDate').value||'').trim();
+  const merged=records.map(me);
+  const filtered=merged.filter(r=>{
+    const di=dk(r.date).replace(/\//g,'-');
+    const mi=di.slice(0,7);
+    if(fd&&di!==fd)return false;
+    if(fm&&mi!==fm)return false;
+    if(q&&!(String(r.name).toLowerCase().includes(q)||String(r.displayName||'').toLowerCase().includes(q)||String(r.tableNo||'').toLowerCase().includes(q)||String(r.staff||'').toLowerCase().includes(q)))return false;
+    return true;
+  });
+  document.getElementById('countBadge').textContent=records.length+'件';
+  const st=document.getElementById('filterStatus');
+  const conds=[];
+  if(fm){const p=fm.split('-');conds.push(`${p[0]}年${p[1]}月`);}
+  if(fd){const p=fd.split('-');conds.push(`${p[0]}年${p[1]}月${p[2]}日`);}
+  if(q)conds.push(`"${q}"`);
+  st.textContent=conds.length?`絞り込み中：${conds.join(' / ')} → ${filtered.length}件`:`全${records.length}件`;
+  st.className=conds.length?'filter-status active':'filter-status';
+  if(!filtered.length){list.innerHTML='<div class="no-records">該当する記録が見つかりません</div>';return;}
+  const groups={};
+  filtered.forEach(r=>{const k=dk(r.date);if(!groups[k])groups[k]=[];groups[k].push(r);});
+  list.innerHTML=Object.keys(groups).map(k=>`
+    <div class="date-group">
+      <div class="date-group-header">
+        <span class="date-group-title">📅 ${k}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:11px;color:#888;">${groups[k].length}件</span>
+          <button class="btn-pdf-date" onclick="bulkPDFForDate('${k}')">まとめてPDF</button>
+        </div>
+      </div>
+      ${groups[k].map(r=>`
+        <div class="record-item">
+          <div class="record-top">
+            <div style="flex:1;min-width:0;">
+              <div class="record-name">${dn(r)}</div>
+              ${r.displayName?`<div class="record-name-orig">署名時：${r.name}</div>`:''}
+              <div class="record-meta">${r.date}${r.birthdate?' · '+r.birthdate:''}</div>
+              <div class="record-tags">
+                ${r.tableNo?`<span class="tag tag-table">🪑 ${r.tableNo}</span>`:`<span class="tag tag-empty">卓番 未入力</span>`}
+                ${r.staff?`<span class="tag tag-staff">👤 ${r.staff}</span>`:`<span class="tag tag-empty">担当者 未入力</span>`}
+              </div>
+            </div>
+            <div class="record-btns">
+              <button class="record-btn edit" onclick="openEdit(${r.id})">✏️ 編集</button>
+              <button class="record-btn" onclick="sPDF(${r.id})">PDF</button>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function openEdit(id){
+  editingId=id;
+  const r=me(records.find(x=>x.id==id));
+  document.getElementById('editOrigName').textContent=r.name||'—';
+  document.getElementById('editDisplayName').value=r.displayName||'';
+  document.getElementById('editTableNo').value=r.tableNo||'';
+  document.getElementById('editStaff').value=r.staff||'';
+  document.getElementById('editModalOverlay').classList.add('show');
+  setTimeout(()=>document.getElementById('editDisplayName').focus(),100);
+}
+function closeEditModal(){editingId=null;document.getElementById('editModalOverlay').classList.remove('show');}
+function saveEdit(){
+  if(!editingId)return;
+  if(!localEdits[editingId])localEdits[editingId]={};
+  localEdits[editingId].displayName=document.getElementById('editDisplayName').value.trim();
+  localEdits[editingId].tableNo=document.getElementById('editTableNo').value.trim();
+  localEdits[editingId].staff=document.getElementById('editStaff').value.trim();
+  localStorage.setItem('edits_'+currentShop.pw,JSON.stringify(localEdits));
+  showToast('保存しました');closeEditModal();renderRecordsList();
+}
+
+function bulkPDFToday(){
+  const n=new Date();
+  bulkPDFForDate(`${n.getFullYear()}/${String(n.getMonth()+1).padStart(2,'0')}/${String(n.getDate()).padStart(2,'0')}`);
+}
+function showDatePickerModal(){
+  const n=new Date();
+  document.getElementById('datePickerInput').value=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+  document.getElementById('dateModalOverlay').classList.add('show');
+}
+function closeDateModal(){document.getElementById('dateModalOverlay').classList.remove('show');}
+function bulkPDFByDate(){
+  const val=document.getElementById('datePickerInput').value;
+  if(!val){showToast('日付を選択してください');return;}
+  const p=val.split('-');closeDateModal();
+  bulkPDFForDate(`${p[0]}/${p[1]}/${p[2]}`);
+}
+function pdfHtml(targets,sn){
+  const arts=ARTICLES.map(a=>`<div style="margin-bottom:10px;"><div style="font-size:12px;font-weight:700;text-decoration:underline;margin-bottom:2px;">${a.title}</div><div style="font-size:12px;line-height:1.8;">${a.body}</div></div>`).join('');
+  return targets.map((r,i)=>{
+    const bd=r.birthdate?String(r.birthdate).replace(/-/g,'/'):'—';
+    return`${i>0?'<div style="page-break-before:always;"></div>':''}
+    <h1 style="font-size:18px;font-weight:700;text-align:center;margin-bottom:4px;">店舗利用に関する誓約書</h1>
+    ${sn?`<p style="text-align:center;color:#555;font-size:12px;margin-bottom:4px;">${sn}</p>`:''}
+    <p style="text-align:center;color:#555;font-size:11px;margin-bottom:12px;">当店を安心してご利用いただくために、以下の確認事項にご同意をお願いしております。</p>
+    <div class="box"><h2>誓約内容</h2>${arts}</div>
+    <div class="box"><h2>お客様情報</h2><div class="grid">
+      <span class="lbl">◆ 氏名（署名時）</span><span>${r.name}</span>
+      ${r.displayName?`<span class="lbl">◆ 表示名</span><span>${r.displayName}</span>`:''}
+      <span class="lbl">◆ 生年月日</span><span>${bd}</span>
+      <span class="lbl">来店日時</span><span>${r.date}</span>
+      <span class="lbl">卓番</span><span>${r.tableNo||'—'}</span>
+      <span class="lbl">担当者</span><span>${r.staff||'—'}</span>
+    </div></div>
+    <div class="box"><h2>署名</h2><img class="sig" src="${r.signature}"></div>
+    <div class="box" style="min-height:60px;"><h2>店舗使用欄</h2></div>`;
+  }).join('');
+}
+function openWin(html,title){
+  const w=window.open('','_blank');
+  if(!w){showToast('ポップアップを許可してください');return;}
+  w.document.write(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${title}</title>
+<style>body{font-family:'Hiragino Sans',sans-serif;max-width:620px;margin:20px auto;color:#222;padding:0 16px;}
+.box{border:1px solid #ccc;border-radius:8px;padding:12px;margin-bottom:10px;}
+.box h2{font-size:11px;color:#888;margin-bottom:6px;font-weight:600;}
+.grid{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:12px;line-height:2;}
+.lbl{color:#666;}.sig{border:1px solid #ccc;border-radius:6px;width:100%;max-height:130px;object-fit:contain;background:#fafaf8;}
+@media print{body{margin:0;}@page{margin:15mm;}}</style></head><body>${html}
+<script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+function bulkPDFForDate(k){
+  const targets=records.map(me).filter(r=>dk(r.date)===k);
+  if(!targets.length){showToast(k+'の記録がありません');return;}
+  openWin(pdfHtml(targets,currentShop.name),`誓約書_${k.replace(/\//g,'')}`);
+}
+function sPDF(id){
+  const r=records.find(x=>x.id==id);
+  if(!r)return;
+  const mr=me(r);
+  openWin(pdfHtml([mr],currentShop.name),`誓約書_${mr.name}`);
+}
+function downloadPDF(){
+  const name=document.getElementById('name').value.trim();
+  if(!name){showToast('氏名を入力してください');return;}
+  if(!document.getElementById('agreeCheck').checked){showToast('誓約内容への同意チェックが必要です');return;}
+  if(!hasSignature){showToast('署名をしてください');return;}
+  openWin(pdfHtml([buildRecord()],currentShop.name),`誓約書_${name}`);
+}
+function exportCSV(){
+  if(!records.length){showToast('記録がありません');return;}
+  const rows=[['ID','店舗','氏名（署名時）','表示名','生年月日','来店日時','卓番','担当者']];
+  records.map(me).forEach(r=>rows.push([r.id,currentShop.name,r.name,r.displayName||'',r.birthdate||'',r.date,r.tableNo||'',r.staff||'']));
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download=`誓約書_${currentShop.name}.csv`;a.click();
+}
+
+function generateQR(){
+  if(qrGenerated)return;
+  const base=location.href.split('?')[0].split('#')[0];
+  const url=`${base}?shop=${currentShop.pw}`;
+  document.getElementById('qrUrlText').textContent=url;
+  new QRCode(document.getElementById('qrCanvas'),{text:url,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+  qrGenerated=true;
+}
+function printQR(){
+  const base=location.href.split('?')[0].split('#')[0];
+  const url=`${base}?shop=${currentShop.pw}`;
+  const c=document.getElementById('qrCanvas');
+  const img=c.querySelector('img')?c.querySelector('img').src:(c.querySelector('canvas')?c.querySelector('canvas').toDataURL():'');
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QRコード</title>
+<style>body{font-family:'Hiragino Sans',sans-serif;text-align:center;padding:40px;}
+h1{font-size:22px;margin-bottom:8px;}p{font-size:13px;color:#555;margin-bottom:20px;line-height:1.7;}
+img{width:220px;height:220px;}small{display:block;font-size:10px;color:#aaa;margin-top:12px;word-break:break-all;}
+@media print{@page{margin:15mm;}}</style></head><body>
+<h1>${currentShop.name}</h1><p>店舗利用に関する誓約書<br>QRコードをスマホで読み取り、ご記入ください。</p>
+<img src="${img}"><small>${url}</small>
+<script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+function switchTab(tab,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('view-'+tab).classList.add('active');
+  if(tab==='records')loadRecords();
+  if(tab==='qr')setTimeout(generateQR,100);
+}
+document.getElementById('editModalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('editModalOverlay'))closeEditModal();});
+document.getElementById('dateModalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('dateModalOverlay'))closeDateModal();});
+</script>
+</body>
+</html>
