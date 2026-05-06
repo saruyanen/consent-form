@@ -560,16 +560,10 @@ async function saveEdit(){
   const tableNo=document.getElementById('editTableNo').value.trim();
   const staff=document.getElementById('editStaff').value.trim();
 
-  // localStorageに保存（既存処理 - 取得失敗時のフォールバック用）
-  if(!localEdits[editingId])localEdits[editingId]={};
-  localEdits[editingId].displayName=displayName;
-  localEdits[editingId].tableNo=tableNo;
-  localEdits[editingId].staff=staff;
-  localStorage.setItem('edits_'+currentShop.pw,JSON.stringify(localEdits));
-
   // 元レコードを取得（GAS側のフォールバック特定用に氏名を渡す）
   const orig=records.find(x=>x.id==editingId);
   const origName=orig?orig.name:'';
+  const savedId=editingId;
 
   // ボタンを送信中表示に
   const okBtn=document.querySelector('#editModalOverlay .modal-ok');
@@ -581,7 +575,7 @@ async function saveEdit(){
   // 実際のスプレッドシート行番号は i+1 なので rowIndex = id + 1
   const payload={
     action:'update',
-    rowIndex:Number(editingId)+1,
+    rowIndex:Number(savedId)+1,
     name:origName,
     displayName:displayName,
     tableNo:tableNo,
@@ -591,11 +585,20 @@ async function saveEdit(){
   // 本部のスプレッドシートにも反映（本部以外の店舗のとき）
   if(!currentShop.isHonbu) await sendGAS(HONBU_URL,payload);
 
-  okBtn.textContent=okText;okBtn.disabled=false;
+  // GAS送信完了後、この記録のlocalEditsを削除
+  // → 次回「最新を取得」でGASから最新データが取れる
+  // → 他端末の編集も正しく反映される
+  if(localEdits[savedId]){
+    delete localEdits[savedId];
+    localStorage.setItem('edits_'+currentShop.pw,JSON.stringify(localEdits));
+  }
 
-  showToast('保存しました');
+  okBtn.textContent=okText;okBtn.disabled=false;
   closeEditModal();
-  renderRecordsList();
+  showToast('保存しました');
+
+  // GASから最新データを再取得して表示を更新
+  await loadRecords();
 }
 // === saveEdit修正ここまで ===
 
