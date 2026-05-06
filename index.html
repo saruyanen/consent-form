@@ -252,7 +252,7 @@
     </div>
     <div class="modal-field">
       <label>卓番</label>
-      <input type="text" id="editTableNo" placeholder="例：A1、B3">
+      <input type="text" id="editTableNo" placeholder="例:A1、B3">
     </div>
     <div class="modal-field">
       <label>担当者名</label>
@@ -552,15 +552,52 @@ function openEdit(id){
   setTimeout(()=>document.getElementById('editDisplayName').focus(),100);
 }
 function closeEditModal(){editingId=null;document.getElementById('editModalOverlay').classList.remove('show');}
-function saveEdit(){
+
+// === ここから saveEdit を修正 ===
+async function saveEdit(){
   if(!editingId)return;
+  const displayName=document.getElementById('editDisplayName').value.trim();
+  const tableNo=document.getElementById('editTableNo').value.trim();
+  const staff=document.getElementById('editStaff').value.trim();
+
+  // localStorageに保存（既存処理 - 取得失敗時のフォールバック用）
   if(!localEdits[editingId])localEdits[editingId]={};
-  localEdits[editingId].displayName=document.getElementById('editDisplayName').value.trim();
-  localEdits[editingId].tableNo=document.getElementById('editTableNo').value.trim();
-  localEdits[editingId].staff=document.getElementById('editStaff').value.trim();
+  localEdits[editingId].displayName=displayName;
+  localEdits[editingId].tableNo=tableNo;
+  localEdits[editingId].staff=staff;
   localStorage.setItem('edits_'+currentShop.pw,JSON.stringify(localEdits));
-  showToast('保存しました');closeEditModal();renderRecordsList();
+
+  // 元レコードを取得（GAS側のフォールバック特定用に氏名を渡す）
+  const orig=records.find(x=>x.id==editingId);
+  const origName=orig?orig.name:'';
+
+  // ボタンを送信中表示に
+  const okBtn=document.querySelector('#editModalOverlay .modal-ok');
+  const okText=okBtn.textContent;
+  okBtn.textContent='送信中...';okBtn.disabled=true;
+
+  // GASに送信
+  // GAS側のdoGetは records.push({id:i, ...}) としており i は 1始まりのループ変数
+  // 実際のスプレッドシート行番号は i+1 なので rowIndex = id + 1
+  const payload={
+    action:'update',
+    rowIndex:Number(editingId)+1,
+    name:origName,
+    displayName:displayName,
+    tableNo:tableNo,
+    staff:staff
+  };
+  await sendGAS(currentShop.gasUrl,payload);
+  // 本部のスプレッドシートにも反映（本部以外の店舗のとき）
+  if(!currentShop.isHonbu) await sendGAS(HONBU_URL,payload);
+
+  okBtn.textContent=okText;okBtn.disabled=false;
+
+  showToast('保存しました');
+  closeEditModal();
+  renderRecordsList();
 }
+// === saveEdit修正ここまで ===
 
 function bulkPDFToday(){
   const n=new Date();
