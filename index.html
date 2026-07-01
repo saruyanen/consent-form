@@ -285,14 +285,20 @@
 const SHOPS=[
   {name:'本部',pw:'0430',gasUrl:'https://script.google.com/macros/s/AKfycby6kEuDmlV8prBTIAVOveyn5KpZ1mWsRfTdPnOSVwc6z52YSwJUNcIvwE0InXZqQipJzg/exec',isHonbu:true},
   {name:'Regulus',pw:'regulus',gasUrl:'https://script.google.com/macros/s/AKfycbyrGXBoGi8VW3b37KSdJwYbN773oy_TElzhDjOoPeUrD5izIdgi8RKPaAPK7eVQHLFjlQ/exec',isHonbu:false},
-  {name:'G.O.A.T.',pw:'goat',gasUrl:'https://script.google.com/macros/s/AKfycbyID2yNBQOOYx1VoJn_DBVgwmpR-NeMfoVqiC4c1e87mBDGjMhSp0pjiRxARTzQCOAs8Q/exec',isHonbu:false},
- {name:'Believe',pw:'believe',gasUrl:'https://script.google.com/macros/s/AKfycbxz4Ey7hGblXwNXbE03ZSpocRP2PgNG_blO-l5fUbqrt6fqfKSB0fRzhorlRNAJl3Zl2g/exec',isHonbu:false},
- {name:'Diamant',pw:'diamant',gasUrl:'https://script.google.com/macros/s/AKfycbwXTCdPz-Ea3ggnb_6GHZeeaoAdeclXwwXb2vLk1KHWREv_atYRjM5E2eUVO6LXW6ULwQ/exec',isHonbu:false},
- {name:'222',pw:'222',gasUrl:'https://script.google.com/macros/s/AKfycbztvrGhgzS9bfafkN1vmi0bMTblxiJ7ZdLcEhFX1CcsDLr_QNdspfiuQ5Mvov_TinQb/exec',isHonbu:false},
- {name:'Attirant',pw:'attirant',gasUrl:'https://script.google.com/macros/s/AKfycbycauZ0V3vYhfEzckEruDLcs2J758n6ZwNLC4zk8kr_WNZv6DRT0M63A6MuKfINONeg/exec',isHonbu:false},
- {name:'Taurus',pw:'taurus',gasUrl:'https://script.google.com/macros/s/AKfycbwbhAuRL-PBcHTABSvodD1FF2uAo8YghL-zIppSYeecOZX_rE35nEfIPda3L3Pbb0oP/exec',isHonbu:false}
+  {name:'G.O.A.T.',pw:'goat',gasUrl:'https://script.google.com/macros/s/AKfycbyID2yNBQOOYx1VoJn_DBVgwmpR-NeMfoVqiC4c1e87mBDGjMhSp0pjiRxARTzQCOAs8Q/exec',isHonbu:false,hidden:true},
+  {name:'Believe',pw:'believe',gasUrl:'https://script.google.com/macros/s/AKfycbxz4Ey7hGblXwNXbE03ZSpocRP2PgNG_blO-l5fUbqrt6fqfKSB0fRzhorlRNAJl3Zl2g/exec',isHonbu:false},
+  {name:'Diamant',pw:'diamant',gasUrl:'https://script.google.com/macros/s/AKfycbwXTCdPz-Ea3ggnb_6GHZeeaoAdeclXwwXb2vLk1KHWREv_atYRjM5E2eUVO6LXW6ULwQ/exec',isHonbu:false},
+  {name:'222',pw:'222',gasUrl:'https://script.google.com/macros/s/AKfycbztvrGhgzS9bfafkN1vmi0bMTblxiJ7ZdLcEhFX1CcsDLr_QNdspfiuQ5Mvov_TinQb/exec',isHonbu:false},
+  {name:'Attirant',pw:'attirant',gasUrl:'https://script.google.com/macros/s/AKfycbycauZ0V3vYhfEzckEruDLcs2J758n6ZwNLC4zk8kr_WNZv6DRT0M63A6MuKfINONeg/exec',isHonbu:false},
+  {name:'Taurus',pw:'taurus',gasUrl:'https://script.google.com/macros/s/AKfycbwbhAuRL-PBcHTABSvodD1FF2uAo8YghL-zIppSYeecOZX_rE35nEfIPda3L3Pbb0oP/exec',isHonbu:false},
+  {name:'GR8',pw:'gr8',gasUrl:'https://script.google.com/macros/s/AKfycbweXvZD-seR8kRnpckEA0hUkAA2TpePQBH3kXciN9FnvKGDhsY4Dr-jHu8BbTUt4PTfzg/exec',isHonbu:false}
 ];
 const HONBU_URL=SHOPS.find(s=>s.isHonbu).gasUrl;
+
+// hiddenフラグ付き店舗を除外して検索（ログイン・QR・URLアクセスから除外）
+function findShopByPw(pw){
+  return SHOPS.find(s=>s.pw===pw && !s.hidden);
+}
 
 const ARTICLES=[
   {title:'第１条',body:'身分証明書の提示の上、18歳以上であることを誓約します。私が提示した身分証は、偽造・窃盗・その他の不正な手段で入手したものではなく、正当な権限を有する機関で発行された私本人のもので間違いありません。別途、店舗より身分証明書のコピーを求められた場合に応じない場合、それ以降、店舗利用が出来ない事を同意します。'},
@@ -317,15 +323,17 @@ const shopParam=urlParams.get('shop')||'';
 window.addEventListener('DOMContentLoaded',()=>{
   const saved=sessionStorage.getItem('shopPw');
   if(saved){
-    const f=SHOPS.find(s=>s.pw===saved);
+    const f=findShopByPw(saved);
     if(f){currentShop=f;startApp();return;}
+    // hidden店舗のセッションが残っていた場合はクリア
+    sessionStorage.removeItem('shopPw');
   }
   if(!isStaff&&shopParam){
-    const f=SHOPS.find(s=>s.pw===shopParam);
+    const f=findShopByPw(shopParam);
     if(f){currentShop=f;startCustomer();return;}
   }
   if(!isStaff&&!shopParam){
-    const f=SHOPS.find(s=>!s.isHonbu);
+    const f=SHOPS.find(s=>!s.isHonbu && !s.hidden);
     if(f){currentShop=f;startCustomer();return;}
   }
   document.getElementById('loginScreen').style.display='flex';
@@ -354,7 +362,7 @@ function init(){
 }
 function doLogin(){
   const pw=document.getElementById('loginPwInput').value.trim();
-  const f=SHOPS.find(s=>s.pw===pw);
+  const f=findShopByPw(pw);
   if(!f){document.getElementById('loginErr').textContent='パスワードが違います';return;}
   currentShop=f;
   sessionStorage.setItem('shopPw',pw);
@@ -558,7 +566,6 @@ function openEdit(id){
 }
 function closeEditModal(){editingId=null;document.getElementById('editModalOverlay').classList.remove('show');}
 
-// === ここから saveEdit を修正 ===
 async function saveEdit(){
   if(!editingId)return;
   const displayName=document.getElementById('editDisplayName').value.trim();
@@ -576,8 +583,6 @@ async function saveEdit(){
   okBtn.textContent='送信中...';okBtn.disabled=true;
 
   // GASに送信
-  // GAS側のdoGetは records.push({id:i, ...}) としており i は 1始まりのループ変数
-  // 実際のスプレッドシート行番号は i+1 なので rowIndex = id + 1
   const payload={
     action:'update',
     rowIndex:Number(savedId)+1,
@@ -587,12 +592,9 @@ async function saveEdit(){
     staff:staff
   };
   await sendGAS(currentShop.gasUrl,payload);
-  // 本部のスプレッドシートにも反映（本部以外の店舗のとき）
   if(!currentShop.isHonbu) await sendGAS(HONBU_URL,payload);
 
-  // GAS送信完了後、この記録のlocalEditsを削除
-  // → 次回「最新を取得」でGASから最新データが取れる
-  // → 他端末の編集も正しく反映される
+  // GAS送信完了後、この記録のlocalEditsを削除（他端末同期のため）
   if(localEdits[savedId]){
     delete localEdits[savedId];
     localStorage.setItem('edits_'+currentShop.pw,JSON.stringify(localEdits));
@@ -602,10 +604,8 @@ async function saveEdit(){
   closeEditModal();
   showToast('保存しました');
 
-  // GASから最新データを再取得して表示を更新
   await loadRecords();
 }
-// === saveEdit修正ここまで ===
 
 function bulkPDFToday(){
   const n=new Date();
