@@ -105,7 +105,7 @@
 </style>
 </head>
 <body>
-
+ 
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
     <h1>店舗利用に関する誓約書</h1>
@@ -115,7 +115,7 @@
     <button class="btn-primary" style="width:100%;" onclick="doLogin()">ログイン</button>
   </div>
 </div>
-
+ 
 <div id="mainScreen" style="display:none;">
 <div class="container">
   <div class="header">
@@ -129,7 +129,7 @@
     <button class="tab" id="tabQr" onclick="switchTab('qr',this)">QRコード</button>
     <button class="tab" id="tabSettings" onclick="switchTab('settings',this)">設定</button>
   </div>
-
+ 
   <div id="view-form" class="view active">
     <div id="formArea">
       <div class="section">
@@ -181,7 +181,7 @@
       <button class="btn-primary" onclick="resetToForm()" style="width:100%;">次の方へ（フォームに戻る）</button>
     </div>
   </div>
-
+ 
   <div id="view-records" class="view">
     <div class="section">
       <h2>保存された記録 <span class="count-badge" id="countBadge">0件</span></h2>
@@ -213,7 +213,7 @@
     <button class="export-btn" onclick="exportCSV()">CSVで一括エクスポート</button>
     <button class="export-btn" style="color:#c00;border-color:#fcc;margin-top:6px;" onclick="logout()">🔒 ログアウト</button>
   </div>
-
+ 
   <div id="view-qr" class="view">
     <div class="section">
       <h2>お客様用QRコード</h2>
@@ -226,7 +226,7 @@
       <button class="btn-print" onclick="printQR()">🖨️ QRコードを印刷する</button>
     </div>
   </div>
-
+ 
   <div id="view-settings" class="view">
     <div class="section">
       <h2>現在の店舗</h2>
@@ -236,7 +236,7 @@
   </div>
 </div>
 </div>
-
+ 
 <div class="modal-overlay" id="editModalOverlay">
   <div class="modal">
     <h3>記録を編集</h3>
@@ -264,7 +264,7 @@
     </div>
   </div>
 </div>
-
+ 
 <div class="modal-overlay" id="dateModalOverlay">
   <div class="modal">
     <h3>日付を選択してPDF出力</h3>
@@ -277,9 +277,9 @@
     </div>
   </div>
 </div>
-
+ 
 <div class="toast" id="toast"></div>
-
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const SHOPS=[
@@ -291,15 +291,16 @@ const SHOPS=[
   {name:'222',pw:'222',gasUrl:'https://script.google.com/macros/s/AKfycbztvrGhgzS9bfafkN1vmi0bMTblxiJ7ZdLcEhFX1CcsDLr_QNdspfiuQ5Mvov_TinQb/exec',isHonbu:false},
   {name:'Attirant',pw:'attirant',gasUrl:'https://script.google.com/macros/s/AKfycbycauZ0V3vYhfEzckEruDLcs2J758n6ZwNLC4zk8kr_WNZv6DRT0M63A6MuKfINONeg/exec',isHonbu:false},
   {name:'Taurus',pw:'taurus',gasUrl:'https://script.google.com/macros/s/AKfycbwbhAuRL-PBcHTABSvodD1FF2uAo8YghL-zIppSYeecOZX_rE35nEfIPda3L3Pbb0oP/exec',isHonbu:false},
-  {name:'GR8',pw:'gr8',gasUrl:'https://script.google.com/macros/s/AKfycbweXvZD-seR8kRnpckEA0hUkAA2TpePQBH3kXciN9FnvKGDhsY4Dr-jHu8BbTUt4PTfzg/exec',isHonbu:false}
+  {name:'GR8',pw:'gr8',gasUrl:'https://script.google.com/macros/s/AKfycbweXvZD-seR8kRnpckEA0hUkAA2TpePQBH3kXciN9FnvKGDhsY4Dr-jHu8BbTUt4PTfzg/exec',isHonbu:false,hidden:true},
+  {name:'X8本店',pw:'honten',gasUrl:'https://script.google.com/macros/s/AKfycbxsaw6Clact9tC_bUKtotQKDeOqtE0KH70EHFzb6IgxH-POVK0Ao3iyZS_G9pyNSVkA1Q/exec',isHonbu:false}
 ];
 const HONBU_URL=SHOPS.find(s=>s.isHonbu).gasUrl;
-
+ 
 // hiddenフラグ付き店舗を除外して検索（ログイン・QR・URLアクセスから除外）
 function findShopByPw(pw){
   return SHOPS.find(s=>s.pw===pw && !s.hidden);
 }
-
+ 
 const ARTICLES=[
   {title:'第１条',body:'身分証明書の提示の上、18歳以上であることを誓約します。私が提示した身分証は、偽造・窃盗・その他の不正な手段で入手したものではなく、正当な権限を有する機関で発行された私本人のもので間違いありません。別途、店舗より身分証明書のコピーを求められた場合に応じない場合、それ以降、店舗利用が出来ない事を同意します。'},
   {title:'第２条',body:'暴力団関係者等の反社会勢力ではなく、それらに準ずる者や構成員でない事を誓います。'},
@@ -313,14 +314,14 @@ const ARTICLES=[
   {title:'第１０条',body:'キープボトルの破損について、天災・人災による場合、当店は損害賠償責任を負いません。また、最終来店から３ヶ月を経過したボトルについては、店内掲示または個別のご連絡等により周知した上で、予告なく廃棄する場合があることに同意します。'},
   {title:'第１１条',body:'万が一、上記の事項に違反した場合、店舗の判断により、入店をお断りする事、すでに入店済みでも退店をお願いする事に同意します。なお、本条に基づく対応はあくまで契約上の措置であり、実力の行使を伴う強制的な退去を意味するものではありません。'},
 ];
-
+ 
 let currentShop=null, records=[], localEdits={}, editingId=null, qrGenerated=false;
 let cvs=null, ctx=null, drawing=false, hasSignature=false;
-
+ 
 const urlParams=new URLSearchParams(location.search);
 const isStaff=urlParams.has('staff');
 const shopParam=urlParams.get('shop')||'';
-
+ 
 // 起動
 window.addEventListener('DOMContentLoaded',()=>{
   const saved=sessionStorage.getItem('shopPw');
@@ -340,7 +341,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
   document.getElementById('loginScreen').style.display='flex';
 });
-
+ 
 function startCustomer(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('mainScreen').style.display='block';
@@ -379,7 +380,7 @@ function logout(){
   document.getElementById('mainScreen').style.display='none';
   document.getElementById('loginPwInput').value='';
 }
-
+ 
 // canvas
 function setupCanvas(){
   cvs=document.getElementById('signatureCanvas');
@@ -413,7 +414,7 @@ function clearSignature(){
   hasSignature=false;document.getElementById('canvasHint').style.display='block';
 }
 window.addEventListener('resize',()=>{if(cvs){resizeCanvas();clearSignature();}});
-
+ 
 function setDateTime(){
   const n=new Date();
   const el=document.getElementById('visitDate');
@@ -428,7 +429,7 @@ function renderArticles(){
   const el=document.getElementById('articleContainer');
   if(el) el.innerHTML=ARTICLES.map(a=>`<div class="article"><div class="article-title">${a.title}</div><div class="article-body">${a.body}</div></div>`).join('');
 }
-
+ 
 async function sendGAS(url,data){
   try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});return true;}
   catch(e){return false;}
@@ -467,7 +468,7 @@ function resetToForm(){
   document.getElementById('agreeCheck').checked=false;
   setDateTime();clearSignature();
 }
-
+ 
 async function loadRecords(){
   const st=document.getElementById('syncStatus');
   st.textContent='取得中...';st.className='sync-status';
@@ -555,7 +556,7 @@ function renderRecordsList(){
         </div>`).join('')}
     </div>`).join('');
 }
-
+ 
 function openEdit(id){
   editingId=id;
   const r=me(records.find(x=>x.id==id));
@@ -567,23 +568,23 @@ function openEdit(id){
   setTimeout(()=>document.getElementById('editDisplayName').focus(),100);
 }
 function closeEditModal(){editingId=null;document.getElementById('editModalOverlay').classList.remove('show');}
-
+ 
 async function saveEdit(){
   if(!editingId)return;
   const displayName=document.getElementById('editDisplayName').value.trim();
   const tableNo=document.getElementById('editTableNo').value.trim();
   const staff=document.getElementById('editStaff').value.trim();
-
+ 
   // 元レコードを取得（GAS側のフォールバック特定用に氏名を渡す）
   const orig=records.find(x=>x.id==editingId);
   const origName=orig?orig.name:'';
   const savedId=editingId;
-
+ 
   // ボタンを送信中表示に
   const okBtn=document.querySelector('#editModalOverlay .modal-ok');
   const okText=okBtn.textContent;
   okBtn.textContent='送信中...';okBtn.disabled=true;
-
+ 
   // GASに送信
   const payload={
     action:'update',
@@ -595,20 +596,20 @@ async function saveEdit(){
   };
   await sendGAS(currentShop.gasUrl,payload);
   if(!currentShop.isHonbu) await sendGAS(HONBU_URL,payload);
-
+ 
   // GAS送信完了後、この記録のlocalEditsを削除（他端末同期のため）
   if(localEdits[savedId]){
     delete localEdits[savedId];
     localStorage.setItem('edits_'+currentShop.pw,JSON.stringify(localEdits));
   }
-
+ 
   okBtn.textContent=okText;okBtn.disabled=false;
   closeEditModal();
   showToast('保存しました');
-
+ 
   await loadRecords();
 }
-
+ 
 function bulkPDFToday(){
   const n=new Date();
   bulkPDFForDate(`${n.getFullYear()}/${String(n.getMonth()+1).padStart(2,'0')}/${String(n.getDate()).padStart(2,'0')}`);
@@ -686,7 +687,7 @@ function exportCSV(){
   a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
   a.download=`誓約書_${currentShop.name}.csv`;a.click();
 }
-
+ 
 function generateQR(){
   if(qrGenerated)return;
   const base=location.href.split('?')[0].split('#')[0];
@@ -711,7 +712,7 @@ img{width:220px;height:220px;}small{display:block;font-size:10px;color:#aaa;marg
 <script>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 }
-
+ 
 function switchTab(tab,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -725,3 +726,4 @@ document.getElementById('dateModalOverlay').addEventListener('click',e=>{if(e.ta
 </script>
 </body>
 </html>
+ 
